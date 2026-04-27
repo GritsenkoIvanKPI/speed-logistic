@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Speed Logistic — přímá přeprava po celé Evropě. Vlastní vozový park 20 vozidel, žádní zprostředkovatelé. Specializace na Low Deck a nadrozměrné přepravy.">
+  <title>Speed Logistic — Přeprava po celé Evropě</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,300;1,9..40,400;1,9..40,700;1,9..40,800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'sl-orange': '#E8530A',
+            'sl-bg': '#111110',
+            'sl-surface': '#1C1A18',
+            'sl-elevated': '#242220',
+            'sl-cream': '#F5F1EB',
+            'sl-text': '#EDE9E4',
+            'sl-muted': '#7A756F',
+          },
+          fontFamily: {
+            sans: ['"DM Sans"', 'Arial', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --orange: #E8530A;
+      --bg: #111110;
+      --surface: #1C1A18;
+      --elevated: #242220;
+      --cream: #F5F1EB;
+      --text: #EDE9E4;
+      --muted: #7A756F;
+      --border: rgba(255,255,255,0.08);
+      --dark-text: #1B1917;
+      --dark-muted: #5a5550;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      margin: 0;
+      overscroll-behavior: none;
+    }
+
+    /* ── Noise grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 300px 300px;
+    }
+
+    /* ── Typography ── */
+    .t-display {
+      font-size: clamp(56px, 8.5vw, 108px);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+    }
+
+    .t-h2 {
+      font-size: clamp(36px, 4.5vw, 68px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+    }
+
+    .t-h3 {
+      font-size: clamp(26px, 3vw, 44px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .t-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── Navigation ── */
+    #site-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      padding: 20px 0;
+      transition: background 0.35s ease, border-color 0.35s ease, padding 0.35s ease;
+      border-bottom: 1px solid transparent;
+    }
+    #site-nav.nav-solid {
+      background: rgba(17,17,16,0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-color: var(--border);
+      padding-top: 13px;
+      padding-bottom: 13px;
+    }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 20px; }
+    }
+
+    .nav-logo-word { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+    .nav-logo-orange { color: var(--orange); }
+
+    .nav-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(237,233,228,0.58);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .nav-link:hover { color: var(--text); }
+    .nav-link:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; border-radius: 2px; }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--orange);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: 3px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn-primary:hover { background: #cf4808; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); background: #b84007; }
+    .btn-primary:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 22px;
+      border: 1px solid rgba(237,233,228,0.18);
+      border-radius: 3px;
+      text-decoration: none;
+      font-family: inherit;
+      cursor: pointer;
+      background: transparent;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .btn-ghost:hover { border-color: rgba(237,233,228,0.4); background: rgba(255,255,255,0.04); }
+    .btn-ghost:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+    .btn-ghost-dark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--dark-text);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 22px;
+      border: 1px solid rgba(27,25,23,0.22);
+      border-radius: 3px;
+      text-decoration: none;
+      font-family: inherit;
+      cursor: pointer;
+      background: transparent;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .btn-ghost-dark:hover { border-color: rgba(27,25,23,0.5); background: rgba(0,0,0,0.04); }
+    .btn-ghost-dark:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+    /* ── Section containers ── */
+    .section-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+    @media (max-width: 768px) { .section-inner { padding: 0 20px; } #site-nav { padding: 16px 20px; } }
+
+    /* ── Service cards ── */
+    .service-card {
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 32px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .service-card:hover { border-color: rgba(232,83,10,0.35); transform: translateY(-3px); }
+    .service-card:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+    .service-icon {
+      width: 42px; height: 42px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(232,83,10,0.1);
+      color: var(--orange);
+      margin-bottom: 24px;
+    }
+
+    /* ── Quiz ── */
+    .quiz-wrap {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 36px;
+    }
+
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 15px 18px;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .quiz-option:hover { border-color: rgba(232,83,10,0.45); background: rgba(232,83,10,0.05); }
+    .quiz-option.selected { border-color: var(--orange); background: rgba(232,83,10,0.1); }
+    .quiz-option:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+    .quiz-field {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 13px 16px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s ease;
+    }
+    .quiz-field:focus { outline: none; border-color: rgba(232,83,10,0.55); }
+    .quiz-field::placeholder { color: var(--muted); }
+
+    .quiz-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    /* ── Cases ── */
+    .case-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--surface);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .case-card:hover { transform: translateY(-4px); }
+    .case-card:hover .case-thumb { transform: scale(1.04); }
+    .case-card:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+    .case-thumb {
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ── Advantage items ── */
+    .adv-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .adv-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(232,83,10,0.1);
+      color: var(--orange);
+    }
+
+    /* ── Step numbers ── */
+    .step-num {
+      font-size: 80px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: rgba(232,83,10,0.12);
+      margin-bottom: -8px;
+    }
+
+    /* ── Stat numbers ── */
+    .stat-num {
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--orange);
+    }
+
+    /* ── Image with gradient overlay ── */
+    .img-frame { position: relative; overflow: hidden; }
+    .img-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .img-grad {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(17,17,16,0.88) 0%, rgba(17,17,16,0.3) 55%, rgba(17,17,16,0.05) 100%);
+    }
+    .img-grad-strong {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.65) 50%, rgba(17,17,16,0.2) 100%);
+    }
+    .img-tint {
+      position: absolute;
+      inset: 0;
+      background: rgba(232,83,10,0.07);
+      mix-blend-mode: multiply;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--elevated); border-radius: 3px; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .anim-1 { animation: fadeUp 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+    .anim-2 { animation: fadeUp 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.12s both; }
+    .anim-3 { animation: fadeUp 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.24s both; }
+    .anim-4 { animation: fadeUp 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.36s both; }
+
+    /* ── Mobile nav link ── */
+    .mobile-nav-link {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      transition: color 0.2s ease;
+    }
+    .mobile-nav-link:hover { color: var(--orange); }
+
+    /* ── Misc ── */
+    .hidden { display: none; }
+    .divider-dark { border-color: var(--border); }
+    .divider-cream { border-color: rgba(27,25,23,0.12); }
+
+    /* ── Sticky stack section ── */
+    .stack-wrap { position: relative; background: var(--bg); }
+
+    .stack-card {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      min-height: 560px;
+      overflow: hidden;
+    }
+
+    .stack-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.38) saturate(0.72);
+    }
+
+    .stack-overlay-grad {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(17,17,16,0.82) 0%, rgba(17,17,16,0.1) 55%, rgba(17,17,16,0.0) 100%);
+    }
+
+    .stack-tint {
+      position: absolute;
+      inset: 0;
+      background: rgba(232,83,10,0.04);
+      mix-blend-mode: multiply;
+    }
+
+    .stack-body {
+      position: relative;
+      z-index: 10;
+      height: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 100px 48px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stack-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .stack-num {
+      font-size: clamp(72px, 10vw, 140px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.045em;
+      color: var(--text);
+    }
+
+    .stack-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 12px;
+    }
+
+    .stack-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+      display: inline-block;
+    }
+
+    .stack-bottom-row {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .stack-desc-block { max-width: 400px; }
+
+    .stack-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--orange);
+      text-decoration: none;
+      margin-bottom: 14px;
+      transition: gap 0.2s ease, opacity 0.2s ease;
+    }
+    .stack-more:hover { gap: 12px; opacity: 0.8; }
+    .stack-more:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+    .stack-desc-text {
+      font-size: 16px;
+      line-height: 1.72;
+      color: rgba(237,233,228,0.7);
+      margin: 0;
+    }
+
+    /* Progress indicator */
+    .stack-progress {
+      position: absolute;
+      right: 48px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 20;
+    }
+    .stack-pip {
+      width: 2px;
+      height: 20px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 1px;
+      transition: background 0.3s ease, height 0.3s ease;
+    }
+    .stack-pip.active {
+      background: var(--orange);
+      height: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .stack-body { padding: 80px 20px 36px; }
+      .stack-num { font-size: clamp(56px, 14vw, 96px); }
+      .stack-bottom-row { justify-content: flex-start; }
+      .stack-progress { display: none; }
+      .stack-desc-block { max-width: 100%; }
+    }
+
+    /* ── Responsive grid layouts ── */
+    .grid-2col  { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .grid-4col  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+    .grid-3col  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid-footer { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; }
+    .grid-2col-adv { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+
+    @media (max-width: 1024px) {
+      .grid-4col  { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .grid-footer { grid-template-columns: 1fr 1fr; gap: 40px; }
+    }
+
+    @media (max-width: 768px) {
+      #site-nav { padding: 14px 20px; }
+      .section-inner { padding: 0 20px; }
+      .grid-2col  { grid-template-columns: 1fr !important; gap: 36px !important; }
+      .grid-2col-adv { grid-template-columns: 1fr !important; gap: 36px !important; }
+      .grid-4col  { grid-template-columns: 1fr !important; gap: 28px !important; }
+      .grid-3col  { grid-template-columns: 1fr !important; gap: 16px !important; }
+      .grid-footer { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+      .step-connector { display: none !important; }
+      .floating-stat { display: none !important; }
+      .cta-flex { flex-direction: column !important; align-items: flex-start !important; padding: 32px !important; }
+      .hide-mobile { display: none !important; }
+      .show-mobile-block { display: block !important; }
+      .quiz-wrap { padding: 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .grid-footer { grid-template-columns: 1fr; gap: 28px; }
+    }
+
+    /* ── Nav logo pill ── */
+    .nav-logo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(17,17,16,0.82);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 7px;
+      padding: 9px 15px 9px 11px;
+      text-decoration: none;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.2s ease;
+    }
+    .nav-logo-pill:hover { border-color: rgba(255,255,255,0.26); }
+    .nav-logo-pill:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; border-radius: 7px; }
+    .nav-pill-icon {
+      width: 22px; height: 22px;
+      background: var(--orange);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-pill { border-radius: 50px !important; }
+
+    /* ── Hero redesign ── */
+    .hero-grad-new {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(17,17,16,0.06) 0%,
+        rgba(17,17,16,0.22) 35%,
+        rgba(17,17,16,0.80) 58%,
+        rgba(17,17,16,1.00) 70%
+      );
+    }
+    .hero-warm-tint {
+      position: absolute; inset: 0;
+      background: linear-gradient(155deg, rgba(232,83,10,0.16) 0%, transparent 48%);
+    }
+    .hero-heading-new {
+      font-size: clamp(38px, 5.4vw, 74px);
+      font-weight: 800;
+      line-height: 0.96;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin: 0 0 32px 0;
+    }
+    .hero-heading-new em { font-style: italic; color: var(--orange); }
+    .hero-rule {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.13);
+      margin: 0; width: 100%;
+    }
+    .hero-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 22px;
+      padding-bottom: 52px;
+      gap: 32px;
+    }
+    .hero-scroll-tag {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(237,233,228,0.38);
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+    }
+    .hero-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      justify-content: flex-end;
+    }
+    .hero-bar-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(237,233,228,0.5);
+      margin: 0;
+      max-width: 300px;
+      text-align: left;
+    }
+
+    @media (max-width: 768px) {
+      .hero-heading-new { font-size: clamp(44px, 13vw, 72px); margin-bottom: 28px; }
+      .hero-bar { flex-direction: column; align-items: flex-start; gap: 18px; padding-bottom: 36px; }
+      .hero-bar-right { flex-direction: column; align-items: flex-start; gap: 14px; justify-content: flex-start; }
+      .hero-bar-text { text-align: left; max-width: 100%; }
+      .hero-scroll-tag { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════
+       1. NAVIGATION
+  ══════════════════════════════════════════════ -->
+  <nav id="site-nav" aria-label="Hlavní navigace">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo-pill" aria-label="Speed Logistic — domů">
+        <div class="nav-pill-icon">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M6 1L11 6L6 11L1 6Z" fill="white" stroke="white" stroke-width="0.3" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span style="font-size: 14px; font-weight: 800; letter-spacing: -0.01em; color: var(--text); line-height: 1; white-space: nowrap;">SPEED LOGISTIC</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#sluzby" class="nav-link">Služby</a>
+        <a href="#jak-pracujeme" class="nav-link">Jak pracujeme</a>
+        <a href="#reference" class="nav-link">Reference</a>
+        <a href="#kariery" class="nav-link">Kariéra</a>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <a href="tel:+420XXXXXXXXX" class="nav-link hidden lg:block">+420 XXX XXX XXX</a>
+        <a href="#poptavka" class="btn-primary btn-pill hidden sm:inline-flex">Získat nabídku</a>
+        <button id="nav-toggle" class="md:hidden" aria-label="Menu" style="background: none; border: none; cursor: pointer; padding: 4px; color: var(--text);">
+          <svg id="icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg id="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 49; background: rgba(17,17,16,0.98); backdrop-filter: blur(16px); flex-direction: column; justify-content: center; align-items: center; gap: 40px; padding: 32px;">
+    <a href="#sluzby" class="mobile-nav-link" onclick="closeMobileMenu()">Služby</a>
+    <a href="#jak-pracujeme" class="mobile-nav-link" onclick="closeMobileMenu()">Jak pracujeme</a>
+    <a href="#reference" class="mobile-nav-link" onclick="closeMobileMenu()">Reference</a>
+    <a href="#kariery" class="mobile-nav-link" onclick="closeMobileMenu()">Kariéra</a>
+    <a href="#poptavka" class="btn-primary" style="font-size: 16px; padding: 14px 32px; margin-top: 8px;" onclick="closeMobileMenu()">Získat nabídku</a>
+    <a href="tel:+420XXXXXXXXX" style="font-size: 15px; color: var(--muted); text-decoration: none;">+420 XXX XXX XXX</a>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       2. HERO
+  ══════════════════════════════════════════════ -->
+  <section style="height: 100vh; min-height: 640px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;">
+
+    <!-- Background image: bright at top, dissolves to solid dark at bottom -->
+    <div style="position: absolute; inset: 0; overflow: hidden;">
+      <img src="images/hero-bg.png" alt="" role="presentation" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.62) saturate(0.82);">
+      <div class="hero-grad-new"></div>
+      <div class="hero-warm-tint"></div>
+    </div>
+
+    <!-- Content anchored at bottom -->
+    <div class="section-inner" style="position: relative; z-index: 10; width: 100%;">
+
+      <!-- Headline -->
+      <h1 class="hero-heading-new anim-2">
+        PŘÍMÁ<br>
+        PŘEPRAVA<br>
+        <em>GARANTOVANĚ.</em>
+      </h1>
+
+      <!-- Separator -->
+      <hr class="hero-rule">
+
+      <!-- Bottom bar -->
+      <div class="hero-bar">
+        <span class="hero-scroll-tag">[ Přejít dolů ]</span>
+        <div class="hero-bar-right">
+          <p class="hero-bar-text">Vlastní vozový park bez zprostředkovatelů. Low&nbsp;Deck a nadrozměrné přepravy po celé Evropě.</p>
+          <a href="#poptavka" class="btn-ghost btn-pill" style="white-space: nowrap; flex-shrink: 0; padding: 13px 28px;">Získat nabídku</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       2b. STICKY STACK SERVICES SHOWCASE
+  ══════════════════════════════════════════════ -->
+  <div class="stack-wrap">
+
+    <!-- Card 1: Low Deck -->
+    <div class="stack-card" style="z-index: 1;">
+      <img class="stack-img" src="images/truck-lowdeck.png" alt="Low Deck přeprava">
+      <div class="stack-overlay-grad"></div>
+      <div class="stack-tint"></div>
+      <div class="stack-body">
+        <div class="stack-top-row">
+          <p class="stack-num">/ 01</p>
+          <div class="stack-tag">
+            <span class="stack-dot"></span>
+            Low Deck přeprava
+          </div>
+        </div>
+        <div class="stack-bottom-row">
+          <div class="stack-desc-block">
+            <a href="#" class="stack-more">
+              Více informací
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <p class="stack-desc-text">Přeprava nadrozměrného nákladu na nízkoložných podvalníkových návěsech. Ideální pro těžkou techniku, průmyslová zařízení a stavební stroje.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Nadrozměrná -->
+    <div class="stack-card" style="z-index: 2;">
+      <img class="stack-img" src="images/case-transport.png" alt="Nadrozměrná přeprava">
+      <div class="stack-overlay-grad"></div>
+      <div class="stack-tint"></div>
+      <div class="stack-body">
+        <div class="stack-top-row">
+          <p class="stack-num">/ 02</p>
+          <div class="stack-tag">
+            <span class="stack-dot"></span>
+            Nadrozměrná přeprava
+          </div>
+        </div>
+        <div class="stack-bottom-row">
+          <div class="stack-desc-block">
+            <a href="#" class="stack-more">
+              Více informací
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <p class="stack-desc-text">Zkušenosti s přepravou nadrozměrného a těžkého nákladu po celé Evropě. Zajišťujeme veškerá povolení, doprovodná vozidla a pilotáž.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Celonákladní FTL -->
+    <div class="stack-card" style="z-index: 3;">
+      <img class="stack-img" src="images/hero-bg.png" alt="Celonákladní přeprava">
+      <div class="stack-overlay-grad"></div>
+      <div class="stack-tint"></div>
+      <div class="stack-body">
+        <div class="stack-top-row">
+          <p class="stack-num">/ 03</p>
+          <div class="stack-tag">
+            <span class="stack-dot"></span>
+            Celonákladní přeprava (FTL)
+          </div>
+        </div>
+        <div class="stack-bottom-row">
+          <div class="stack-desc-block">
+            <a href="#" class="stack-more">
+              Více informací
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <p class="stack-desc-text">Přímé spojení bez překládky vlastními kamiony. Garantovaný termín doručení a sledování zásilky v reálném čase po celé trase.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Mezinárodní přeprava -->
+    <div class="stack-card" style="z-index: 4;">
+      <img class="stack-img" src="images/international.png" alt="Mezinárodní přeprava">
+      <div class="stack-overlay-grad"></div>
+      <div class="stack-tint"></div>
+      <div class="stack-body">
+        <div class="stack-top-row">
+          <p class="stack-num">/ 04</p>
+          <div class="stack-tag">
+            <span class="stack-dot"></span>
+            Mezinárodní přeprava
+          </div>
+        </div>
+        <div class="stack-bottom-row">
+          <div class="stack-desc-block">
+            <a href="#" class="stack-more">
+              Více informací
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <p class="stack-desc-text">Přepravujeme náklady do celé Evropy — Německo, Francie, Polsko, Benelux a další. Vlastní vozový park, přímé trasy bez zprostředkovatelů.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: Skladování -->
+    <div class="stack-card" style="z-index: 5;">
+      <img class="stack-img" src="images/warehouse.png" alt="Skladování a logistika">
+      <div class="stack-overlay-grad"></div>
+      <div class="stack-tint"></div>
+      <div class="stack-body">
+        <div class="stack-top-row">
+          <p class="stack-num">/ 05</p>
+          <div class="stack-tag">
+            <span class="stack-dot"></span>
+            Skladování a logistika
+          </div>
+        </div>
+        <div class="stack-bottom-row">
+          <div class="stack-desc-block">
+            <a href="#" class="stack-more">
+              Více informací
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <p class="stack-desc-text">Vlastní sklad s kompletním logistickým zázemím. Příjem, uskladnění a distribuce nákladu dle vašich potřeb — flexibilně a bezpečně.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       3. SERVICES
+  ══════════════════════════════════════════════ -->
+  <section id="sluzby" style="background: var(--bg); padding: 96px 0;">
+    <div class="section-inner">
+
+      <!-- Header row -->
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 64px;">
+        <div>
+          <p class="t-label" style="color: var(--orange); margin-bottom: 16px;">Naše služby</p>
+          <h2 class="t-h2" style="max-width: 520px;">Komplexní přepravní řešení pro B2B</h2>
+        </div>
+        <p style="color: var(--muted); max-width: 340px; font-size: 15px; line-height: 1.7;">
+          Vlastní vozový park 20 vozidel různých typů. Přepravujeme standardní i nadrozměrné zásilky po celé Evropě.
+        </p>
+      </div>
+
+      <!-- Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+
+        <a href="#" class="service-card">
+          <div class="service-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px;">Low Deck přeprava</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75; margin-bottom: 24px;">Nadrozměrný náklad na nízkoložných podvalníkových návěsech. Ideální pro těžkou techniku a průmyslová zařízení.</p>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+            Více informací
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+
+        <a href="#" class="service-card">
+          <div class="service-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px;">Nadrozměrná přeprava</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75; margin-bottom: 24px;">Přeprava nadrozměrného a těžkého nákladu. Veškerá povolení, doprovodná vozidla a pilotáž po celé Evropě.</p>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+            Více informací
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+
+        <a href="#" class="service-card">
+          <div class="service-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3m-4 12h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px;">Celonákladní přeprava (FTL)</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75; margin-bottom: 24px;">Přímé spojení bez překládky. Garantovaný termín doručení a sledování zásilky v reálném čase.</p>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+            Více informací
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+
+        <a href="#" class="service-card">
+          <div class="service-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px;">Skladování a logistika</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75; margin-bottom: 24px;">Vlastní sklad s kompletním zázemím. Příjem, uskladnění a distribuce nákladu dle vašich potřeb.</p>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+            Více informací
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+
+        <a href="#" class="service-card">
+          <div class="service-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px;">Mezinárodní přeprava</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75; margin-bottom: 24px;">DE, FR, PL, Benelux a další. Vlastní vozový park, přímé trasy, bez zprostředkovatelů a zbytečných nákladů.</p>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+            Více informací
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+
+        <a href="#" class="service-card">
+          <div class="service-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px;">Expresní přeprava</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75; margin-bottom: 24px;">Urgentní zásilky s garantovaným termínem. Přímý jízd, prioritní dokumentace, nepřetržitý kontakt.</p>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+            Více informací
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       4. QUIZ / LEAD FORM
+  ══════════════════════════════════════════════ -->
+  <section id="poptavka" style="background: var(--surface); padding: 96px 0;">
+    <div class="section-inner">
+      <!-- Mobile-only header -->
+      <div style="display: none;" class="show-mobile-block" id="quiz-mobile-header">
+        <p class="t-label" style="color: var(--orange); margin-bottom: 16px;">Kalkulace zdarma</p>
+        <h2 class="t-h2" style="margin-bottom: 12px;">Zjistěte cenu přepravy za 2 minuty</h2>
+        <p style="color: var(--muted); font-size: 15px; line-height: 1.65; margin-bottom: 40px;">Odpovězte na 4 otázky a dostanete přesnou kalkulaci bez závazků.</p>
+      </div>
+      <div class="grid-2col">
+
+        <!-- Left column -->
+        <div class="hide-mobile">
+          <p class="t-label" style="color: var(--orange); margin-bottom: 20px;">Kalkulace zdarma</p>
+          <h2 class="t-h2" style="margin-bottom: 24px; max-width: 420px;">Zjistěte cenu přepravy za 2 minuty</h2>
+          <p style="color: var(--muted); font-size: 16px; line-height: 1.7; max-width: 400px; margin-bottom: 36px;">
+            Odpovězte na 4 otázky a náš dispečer vás obratem kontaktuje s přesnou kalkulací. Bez závazků.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 22px; height: 22px; border-radius: 50%; background: rgba(232,83,10,0.15); color: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 6l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size: 14px; color: var(--muted);">Odpověď do 2 hodin v pracovní době</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 22px; height: 22px; border-radius: 50%; background: rgba(232,83,10,0.15); color: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 6l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size: 14px; color: var(--muted);">Přesná cena bez skrytých poplatků</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 22px; height: 22px; border-radius: 50%; background: rgba(232,83,10,0.15); color: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 6l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size: 14px; color: var(--muted);">Vlastní vozový park — přímý dopravce</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: quiz -->
+        <div class="quiz-wrap" style="max-width: 560px; width: 100%;">
+
+          <!-- Progress -->
+          <div style="margin-bottom: 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-size: 13px; font-weight: 500;" id="q-label">Krok 1 ze 4</span>
+              <span style="font-size: 13px; color: var(--muted);" id="q-pct">25%</span>
+            </div>
+            <div style="height: 3px; background: var(--border); border-radius: 2px;">
+              <div id="q-bar" style="height: 3px; width: 25%; background: var(--orange); border-radius: 2px; transition: width 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);"></div>
+            </div>
+          </div>
+
+          <!-- Step 1 -->
+          <div id="q1">
+            <p style="font-size: 17px; font-weight: 600; margin-bottom: 20px;">Jaký typ nákladu přepravujete?</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button class="quiz-option" onclick="qNext(this,1)">Standardní palety a kusy</button>
+              <button class="quiz-option" onclick="qNext(this,1)">Nadrozměrný nebo těžký náklad</button>
+              <button class="quiz-option" onclick="qNext(this,1)">Strojní zařízení / průmyslová technika</button>
+              <button class="quiz-option" onclick="qNext(this,1)">Stavební materiál a technika</button>
+              <button class="quiz-option" onclick="qNext(this,1)">Jiný typ nákladu</button>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div id="q2" class="hidden">
+            <p style="font-size: 17px; font-weight: 600; margin-bottom: 20px;">Kam směřuje zásilka?</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button class="quiz-option" onclick="qNext(this,2)">Česká republika</button>
+              <button class="quiz-option" onclick="qNext(this,2)">Německo</button>
+              <button class="quiz-option" onclick="qNext(this,2)">Francie</button>
+              <button class="quiz-option" onclick="qNext(this,2)">Polsko</button>
+              <button class="quiz-option" onclick="qNext(this,2)">Jiná země EU</button>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div id="q3" class="hidden">
+            <p style="font-size: 17px; font-weight: 600; margin-bottom: 20px;">Kdy potřebujete přepravu?</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button class="quiz-option" onclick="qNext(this,3)">Co nejdříve — expres</button>
+              <button class="quiz-option" onclick="qNext(this,3)">Do 1 týdne</button>
+              <button class="quiz-option" onclick="qNext(this,3)">Do 1 měsíce</button>
+              <button class="quiz-option" onclick="qNext(this,3)">Pravidelná přeprava</button>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div id="q4" class="hidden">
+            <p style="font-size: 17px; font-weight: 600; margin-bottom: 20px;">Kde vás máme kontaktovat?</p>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <div>
+                <label class="quiz-label" for="q-name">Jméno a příjmení *</label>
+                <input id="q-name" type="text" class="quiz-field" placeholder="Jan Novák" autocomplete="name">
+              </div>
+              <div>
+                <label class="quiz-label" for="q-company">Název společnosti</label>
+                <input id="q-company" type="text" class="quiz-field" placeholder="ABC s.r.o." autocomplete="organization">
+              </div>
+              <div>
+                <label class="quiz-label" for="q-phone">Telefon *</label>
+                <input id="q-phone" type="tel" class="quiz-field" placeholder="+420 XXX XXX XXX" autocomplete="tel">
+              </div>
+              <div>
+                <label class="quiz-label" for="q-email">E-mail</label>
+                <input id="q-email" type="email" class="quiz-field" placeholder="jan@firma.cz" autocomplete="email">
+              </div>
+              <button class="btn-primary" style="width: 100%; justify-content: center; padding: 15px; font-size: 15px; margin-top: 4px;" onclick="qSubmit()">
+                Odeslat poptávku
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <p style="font-size: 12px; text-align: center; color: var(--muted);">Odesláním souhlasíte se zpracováním osobních údajů. Bez závazků.</p>
+            </div>
+          </div>
+
+          <!-- Success -->
+          <div id="q-success" class="hidden" style="text-align: center; padding: 40px 0;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(232,83,10,0.12); color: var(--orange); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p style="font-size: 19px; font-weight: 600; margin-bottom: 10px;">Poptávka odeslána</p>
+            <p style="color: var(--muted); font-size: 14px; line-height: 1.7;">Náš dispečer vás kontaktuje do 2 pracovních hodin s přesnou kalkulací.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       5. CTA BLOCK 1
+  ══════════════════════════════════════════════ -->
+  <section style="background: var(--bg); padding: 80px 0; position: relative; overflow: hidden;">
+    <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 25% 50%, rgba(232,83,10,0.06) 0%, transparent 65%); pointer-events: none;"></div>
+    <div class="section-inner" style="position: relative;">
+      <div class="cta-flex" style="border: 1px solid rgba(232,83,10,0.2); border-radius: 6px; padding: 48px 56px; background: linear-gradient(135deg, rgba(232,83,10,0.06) 0%, rgba(36,34,32,0.6) 100%); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 32px;">
+        <div>
+          <h2 style="font-size: clamp(24px, 3vw, 36px); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 10px;">Potřebujete přepravu pro vaši firmu?</h2>
+          <p style="color: var(--muted); font-size: 15px;">Vlastní flotila · Přímý dopravce · Bez skrytých poplatků</p>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; flex-shrink: 0;">
+          <a href="tel:+420XXXXXXXXX" class="btn-ghost" style="padding: 13px 22px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.92a16 16 0 0 0 6 6l.92-1.06a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.01z"/></svg>
+            Zavolat
+          </a>
+          <a href="#poptavka" class="btn-primary" style="padding: 13px 26px;">Získat nabídku</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       6. ADVANTAGES / WHY US
+  ══════════════════════════════════════════════ -->
+  <section style="background: var(--cream); color: var(--dark-text); padding: 96px 0;">
+    <div class="section-inner">
+      <div class="grid-2col-adv">
+
+        <!-- Image column -->
+        <div style="position: relative;">
+          <div class="img-frame" style="border-radius: 4px; aspect-ratio: 4/3;">
+            <img src="images/warehouse.png" alt="Speed Logistic sklad" style="filter: brightness(0.62) saturate(0.75);">
+            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(17,17,16,0.85) 0%, rgba(17,17,16,0.25) 55%, rgba(17,17,16,0.0) 100%);"></div>
+            <div style="position: absolute; inset: 0; background: rgba(232,83,10,0.06); mix-blend-mode: multiply;"></div>
+          </div>
+          <!-- Floating stat -->
+          <div class="floating-stat" style="position: absolute; bottom: -24px; right: -24px; background: #1C1A18; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 22px 28px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
+            <p style="font-size: 42px; font-weight: 800; color: var(--orange); letter-spacing: -0.04em; line-height: 1;">1</p>
+            <p style="font-size: 13px; color: rgba(237,233,228,0.6); margin-top: 6px;">Vlastní sklad CZ</p>
+          </div>
+        </div>
+
+        <!-- Content column -->
+        <div>
+          <p class="t-label" style="color: var(--orange); margin-bottom: 20px;">Proč Speed Logistic</p>
+          <h2 class="t-h2" style="color: var(--dark-text); max-width: 400px; margin-bottom: 48px;">Přímý dopravce, ne zprostředkovatel</h2>
+
+          <div style="display: flex; flex-direction: column; gap: 32px;">
+            <div class="adv-item" style="color: var(--dark-text);">
+              <div class="adv-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              </div>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Vlastní vozový park 20 vozidel</h3>
+                <p style="color: var(--dark-muted); font-size: 14px; line-height: 1.75;">Nejsme zprostředkovatelé. Vlastníme a provozujeme vozový park včetně Low Deck návěsů pro nadrozměrné přepravy.</p>
+              </div>
+            </div>
+
+            <div class="adv-item" style="color: var(--dark-text);">
+              <div class="adv-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Garantované termíny</h3>
+                <p style="color: var(--dark-muted); font-size: 14px; line-height: 1.75;">Přepravujeme přesně dle dohodnutých termínů. GPS sledování zásilek a nepřetržitý dohled dispečinku.</p>
+              </div>
+            </div>
+
+            <div class="adv-item" style="color: var(--dark-text);">
+              <div class="adv-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Transparentní ceny</h3>
+                <p style="color: var(--dark-muted); font-size: 14px; line-height: 1.75;">Jasná kalkulace bez skrytých poplatků. Cena v nabídce je cena na faktuře.</p>
+              </div>
+            </div>
+
+            <div class="adv-item" style="color: var(--dark-text);">
+              <div class="adv-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Profesionální tým</h3>
+                <p style="color: var(--dark-muted); font-size: 14px; line-height: 1.75;">10 zkušených dispečerů a 14 certifikovaných řidičů s praxí v mezinárodní přepravě.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       7. HOW WE WORK
+  ══════════════════════════════════════════════ -->
+  <section id="jak-pracujeme" style="background: var(--bg); padding: 96px 0;">
+    <div class="section-inner">
+
+      <div style="margin-bottom: 64px;">
+        <p class="t-label" style="color: var(--orange); margin-bottom: 16px;">Proces</p>
+        <h2 class="t-h2" style="max-width: 480px;">Jak to u nás funguje</h2>
+      </div>
+
+      <!-- Steps -->
+      <div class="grid-4col" style="margin-bottom: 72px;">
+
+        <div style="position: relative;">
+          <p class="step-num">01</p>
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Odešlete poptávku</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75;">Vyplňte formulář nebo zavolejte dispečinku. Stačí základní informace o zásilce a trase.</p>
+          <div class="step-connector" style="position: absolute; top: 44px; right: -16px; width: 32px; height: 1px; background: var(--border);"></div>
+        </div>
+
+        <div style="position: relative;">
+          <p class="step-num">02</p>
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Kalkulace do 2 hodin</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75;">Připravíme přesnou nabídku bez skrytých poplatků a potvrdíme termín nakládky.</p>
+          <div class="step-connector" style="position: absolute; top: 44px; right: -16px; width: 32px; height: 1px; background: var(--border);"></div>
+        </div>
+
+        <div style="position: relative;">
+          <p class="step-num">03</p>
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Nakládka a přeprava</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75;">Vlastní vozidlo přijede dle plánu. Náklad je pojištěn a sledován v reálném čase.</p>
+          <div class="step-connector" style="position: absolute; top: 44px; right: -16px; width: 32px; height: 1px; background: var(--border);"></div>
+        </div>
+
+        <div>
+          <p class="step-num">04</p>
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Doručení a dokumentace</h3>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75;">Náklad doručen dle dohody. Předáme CMR, faktury a potvrzení doručení.</p>
+        </div>
+
+      </div>
+
+      <!-- Full-width feature image -->
+      <div class="img-frame" style="border-radius: 4px; height: 400px;">
+        <img src="images/truck-lowdeck.png" alt="Speed Logistic Low Deck přeprava" style="filter: brightness(0.45) saturate(0.7);">
+        <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(17,17,16,0.97) 0%, rgba(17,17,16,0.65) 55%, rgba(17,17,16,0.15) 100%);"></div>
+        <div style="position: absolute; inset: 0; display: flex; align-items: center; padding: 64px;">
+          <div style="max-width: 520px;">
+            <p class="t-label" style="color: rgba(232,83,10,0.9); margin-bottom: 18px;">Low Deck specialista</p>
+            <p class="t-h3" style="line-height: 1.3;">Přepravujeme to, co ostatní odmítají — nadrozměrné stroje, průmyslová zařízení, jeřáby</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       8. CASES / PORTFOLIO
+  ══════════════════════════════════════════════ -->
+  <section id="reference" style="background: var(--cream); color: var(--dark-text); padding: 96px 0;">
+    <div class="section-inner">
+
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 64px;">
+        <div>
+          <p class="t-label" style="color: var(--orange); margin-bottom: 16px;">Případové studie</p>
+          <h2 class="t-h2" style="color: var(--dark-text); max-width: 460px;">Náklady, které jsme dopravili</h2>
+        </div>
+        <a href="#" class="btn-ghost-dark">Zobrazit všechny reference</a>
+      </div>
+
+      <div class="grid-3col">
+
+        <!-- Case 1 -->
+        <a href="#" class="case-card">
+          <div style="overflow: hidden; aspect-ratio: 16/9;">
+            <img class="case-thumb" src="images/case-transport.png" alt="Přeprava průmyslového lisu" style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.65) saturate(0.75);">
+          </div>
+          <div style="padding: 28px;">
+            <p style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 12px;">Nadrozměrná přeprava</p>
+            <h3 style="font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Průmyslový lis 48t · CZ → DE</h3>
+            <p style="color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 20px;">Přeprava průmyslového lisu z Brna do Mnichova. Low Deck přívěs, police coordination, 2 dny přepravy.</p>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+              Číst více
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Case 2 -->
+        <a href="#" class="case-card">
+          <div style="overflow: hidden; aspect-ratio: 16/9;">
+            <img class="case-thumb" src="images/truck-lowdeck.png" alt="Low Deck přeprava jeřábu" style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.65) saturate(0.75);">
+          </div>
+          <div style="padding: 28px;">
+            <p style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 12px;">Low Deck</p>
+            <h3 style="font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Stavební jeřáb · CZ → FR</h3>
+            <p style="color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 20px;">Přeprava demoličního jeřábu z Prahy do Lyonu. Koordinace povolení 4 zemí, eskort, 1&nbsp;100 km.</p>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+              Číst více
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Case 3 -->
+        <a href="#" class="case-card">
+          <div style="overflow: hidden; aspect-ratio: 16/9;">
+            <img class="case-thumb" src="images/hero-bg.png" alt="Sériová přeprava automotive" style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.65) saturate(0.75);">
+          </div>
+          <div style="padding: 28px;">
+            <p style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 12px;">Sériová přeprava</p>
+            <h3 style="font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Automotive díly · CZ → PL</h3>
+            <p style="color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 20px;">Pravidelné svozy komponent z Mladé Boleslavi do Varšavy. 3× týdně po dobu 12 měsíců.</p>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--orange);">
+              Číst více
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       9. CTA BLOCK 2 — full-width image
+  ══════════════════════════════════════════════ -->
+  <section style="position: relative; overflow: hidden; height: 480px;">
+    <img src="images/case-transport.png" alt="" role="presentation" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.28) saturate(0.5);">
+    <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(17,17,16,0.97) 0%, rgba(17,17,16,0.75) 55%, rgba(17,17,16,0.25) 100%);"></div>
+    <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 10% 50%, rgba(232,83,10,0.06) 0%, transparent 60%);"></div>
+
+    <div class="section-inner" style="position: relative; z-index: 10; height: 100%; display: flex; align-items: center;">
+      <div style="max-width: 560px;">
+        <p class="t-label" style="color: rgba(232,83,10,0.9); margin-bottom: 18px;">Připraveni zahájit spolupráci?</p>
+        <h2 class="t-h3" style="margin-bottom: 20px; line-height: 1.25;">Přepravujeme to, co ostatní nemohou</h2>
+        <p style="color: var(--muted); font-size: 16px; line-height: 1.7; margin-bottom: 32px;">Kontaktujte nás a zjistěte, jak vám Speed Logistic může pomoci — bez ohledu na rozměry nebo trasu.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+          <a href="#poptavka" class="btn-primary" style="padding: 14px 28px; font-size: 15px;">Získat nabídku</a>
+          <a href="mailto:info@speedlogistic.cz" class="btn-ghost" style="padding: 14px 28px; font-size: 15px;">info@speedlogistic.cz</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       10. FOOTER
+  ══════════════════════════════════════════════ -->
+  <footer style="background: #0C0C0B; border-top: 1px solid var(--border); padding: 72px 0 40px;">
+    <div class="section-inner">
+
+      <div class="grid-footer" style="margin-bottom: 64px;">
+
+        <!-- Brand -->
+        <div>
+          <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 18px;">
+            <span style="font-size: 17px; font-weight: 800; color: var(--orange); letter-spacing: -0.02em;">SPEED</span>
+            <span style="font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.02em;">LOGISTIC</span>
+          </div>
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.75; max-width: 210px;">Přímý přepravce pro B2B logistiku. Vlastní flotila, žádní zprostředkovatelé.</p>
+        </div>
+
+        <!-- Services -->
+        <div>
+          <p class="t-label" style="color: var(--muted); margin-bottom: 20px;">Služby</p>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+            <li><a href="#" class="nav-link" style="font-size: 14px;">Low Deck přeprava</a></li>
+            <li><a href="#" class="nav-link" style="font-size: 14px;">Nadrozměrná přeprava</a></li>
+            <li><a href="#" class="nav-link" style="font-size: 14px;">Celonákladní přeprava</a></li>
+            <li><a href="#" class="nav-link" style="font-size: 14px;">Mezinárodní přeprava</a></li>
+            <li><a href="#" class="nav-link" style="font-size: 14px;">Skladování a logistika</a></li>
+          </ul>
+        </div>
+
+        <!-- Company -->
+        <div>
+          <p class="t-label" style="color: var(--muted); margin-bottom: 20px;">Společnost</p>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+            <li><a href="#jak-pracujeme" class="nav-link" style="font-size: 14px;">Jak pracujeme</a></li>
+            <li><a href="#reference" class="nav-link" style="font-size: 14px;">Případové studie</a></li>
+            <li><a href="#kariery" class="nav-link" style="font-size: 14px;" id="kariery">Kariéra</a></li>
+            <li><a href="#" class="nav-link" style="font-size: 14px;">O nás</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <p class="t-label" style="color: var(--muted); margin-bottom: 20px;">Kontakt</p>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
+            <li>
+              <a href="tel:+420XXXXXXXXX" style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(237,233,228,0.6); text-decoration: none; transition: color 0.2s;"
+                 onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='rgba(237,233,228,0.6)'">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.92a16 16 0 0 0 6 6l.92-1.06a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.01z"/></svg>
+                +420 XXX XXX XXX
+              </a>
+            </li>
+            <li>
+              <a href="mailto:info@speedlogistic.cz" style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(237,233,228,0.6); text-decoration: none; transition: color 0.2s;"
+                 onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='rgba(237,233,228,0.6)'">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                info@speedlogistic.cz
+              </a>
+            </li>
+            <li style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: rgba(237,233,228,0.6);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="flex-shrink:0; margin-top:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Česká republika<br>Přeprava po celé Evropě</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bottom bar -->
+      <div style="border-top: 1px solid var(--border); padding-top: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+        <p style="font-size: 13px; color: var(--muted);">© 2024 Speed Logistic s.r.o. Všechna práva vyhrazena.</p>
+        <div style="display: flex; gap: 24px;">
+          <a href="#" class="nav-link" style="font-size: 13px; color: var(--muted);">Ochrana osobních údajů</a>
+          <a href="#" class="nav-link" style="font-size: 13px; color: var(--muted);">Obchodní podmínky</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <script>
+    // ── Sticky nav ──
+    const nav = document.getElementById('site-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('nav-solid', window.scrollY > 50);
+    }, { passive: true });
+
+    // ── Mobile menu ──
+    const mobileMenu = document.getElementById('mobile-menu');
+    const iconOpen = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
+    let menuOpen = false;
+
+    document.getElementById('nav-toggle').addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.style.display = menuOpen ? 'flex' : 'none';
+      iconOpen.style.display  = menuOpen ? 'none' : 'block';
+      iconClose.style.display = menuOpen ? 'block' : 'none';
+      document.body.style.overflow = menuOpen ? 'hidden' : '';
+    });
+
+    function closeMobileMenu() {
+      menuOpen = false;
+      mobileMenu.style.display = 'none';
+      iconOpen.style.display  = 'block';
+      iconClose.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // ── Quiz ──
+    const qSteps = ['q1','q2','q3','q4','q-success'];
+    const qLabels = ['Krok 1 ze 4','Krok 2 ze 4','Krok 3 ze 4','Krok 4 ze 4','Hotovo'];
+    const qPcts   = ['25%','50%','75%','100%','100%'];
+    let qCurrent = 0;
+
+    function qNext(btn, step) {
+      btn.closest('[id]').querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+      btn.classList.add('selected');
+      setTimeout(() => {
+        document.getElementById(qSteps[qCurrent]).classList.add('hidden');
+        qCurrent++;
+        document.getElementById(qSteps[qCurrent]).classList.remove('hidden');
+        document.getElementById('q-label').textContent = qLabels[qCurrent];
+        document.getElementById('q-pct').textContent   = qPcts[qCurrent];
+        document.getElementById('q-bar').style.width   = qPcts[qCurrent];
+      }, 280);
+    }
+
+    function qSubmit() {
+      document.getElementById(qSteps[qCurrent]).classList.add('hidden');
+      qCurrent = 4;
+      document.getElementById('q-success').classList.remove('hidden');
+      document.getElementById('q-label').textContent = qLabels[4];
+      document.getElementById('q-pct').textContent   = qPcts[4];
+      document.getElementById('q-bar').style.width   = qPcts[4];
+    }
+  </script>
+
+</body>
+</html>
