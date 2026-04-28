@@ -384,6 +384,7 @@
       position: sticky;
       top: 0;
       height: 100vh;
+      height: 100dvh;
       min-height: 560px;
       overflow: hidden;
     }
@@ -394,7 +395,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: brightness(0.38) saturate(0.72);
+      filter: brightness(0.45) saturate(0.75);
     }
 
     .stack-overlay-grad {
@@ -456,8 +457,17 @@
     }
 
     .stack-bottom-row {
+      position: absolute;
+      bottom: 300px;
+      right: 48px;
       display: flex;
       justify-content: flex-end;
+    }
+
+    /* Spacer between stack cards — adds dwell time per card */
+    .stack-spacer {
+      height: 60vh;
+      pointer-events: none;
     }
 
     .stack-desc-block { max-width: 400px; }
@@ -510,7 +520,13 @@
     @media (max-width: 768px) {
       .stack-body { padding: 80px 20px 36px; }
       .stack-num { font-size: clamp(56px, 14vw, 96px); }
-      .stack-bottom-row { justify-content: flex-start; }
+      .stack-bottom-row {
+        bottom: 180px;
+        right: 20px;
+        left: 20px;
+        justify-content: flex-start;
+      }
+      .stack-spacer { height: 40vh; }
       .stack-progress { display: none; }
       .stack-desc-block { max-width: 100%; }
     }
@@ -751,6 +767,7 @@
         </div>
       </div>
     </div>
+    <div class="stack-spacer"></div>
 
     <!-- Card 2: Nadrozměrná -->
     <div class="stack-card" style="z-index: 2;">
@@ -776,6 +793,7 @@
         </div>
       </div>
     </div>
+    <div class="stack-spacer"></div>
 
     <!-- Card 3: Celonákladní FTL -->
     <div class="stack-card" style="z-index: 3;">
@@ -801,6 +819,7 @@
         </div>
       </div>
     </div>
+    <div class="stack-spacer"></div>
 
     <!-- Card 4: Mezinárodní přeprava -->
     <div class="stack-card" style="z-index: 4;">
@@ -826,6 +845,7 @@
         </div>
       </div>
     </div>
+    <div class="stack-spacer"></div>
 
     <!-- Card 5: Skladování -->
     <div class="stack-card" style="z-index: 5;">
